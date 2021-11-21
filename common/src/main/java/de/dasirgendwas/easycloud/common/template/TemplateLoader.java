@@ -1,6 +1,7 @@
 package de.dasirgendwas.easycloud.common.template;
 
 import com.google.gson.Gson;
+import de.dasirgendwas.easycloud.common.utils.JsonUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,10 +15,16 @@ public class TemplateLoader {
     public TemplateLoader() throws IOException {
         var templateConfig = new File(TemplateLoader.TEMPLATE_CONFIG_FILE);
         if (!templateConfig.exists()) {
-            templateConfig.createNewFile();
+           templateConfig.createNewFile();
         }
-        var tmpTemplateManager = new Gson().fromJson(new FileInputStream(templateConfig).toString(), TemplateManager.class);
-        this.templateManager = tmpTemplateManager != null ? tmpTemplateManager : new TemplateManager();
+        var text = new FileInputStream(templateConfig).toString();
+        TemplateManager templateManager;
+        if (JsonUtils.isValidJson(text, TemplateManager.class)) {
+            templateManager = new Gson().fromJson(new FileInputStream(templateConfig).toString(), TemplateManager.class);
+        } else {
+            templateManager = new TemplateManager();
+        }
+        this.templateManager = templateManager;
     }
 
     public TemplateManager getTemplateManager() {
