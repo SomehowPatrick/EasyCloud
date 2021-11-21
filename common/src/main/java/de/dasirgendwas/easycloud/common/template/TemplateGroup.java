@@ -2,7 +2,7 @@ package de.dasirgendwas.easycloud.common.template;
 
 import java.util.List;
 
-public class TemplateGroup {
+public class TemplateGroup{
     private String name;
     private String icon;
     private int slot;
@@ -67,15 +67,5 @@ public class TemplateGroup {
         this.templates = templates;
     }
 
-    @Override
-    public String toString() {
-        return "TemplateGroup{" +
-                "name='" + name + '\'' +
-                ", icon='" + icon + '\'' +
-                ", slot=" + slot +
-                ", displayName='" + displayName + '\'' +
-                ", description='" + description + '\'' +
-                ", templates=" + templates +
-                '}';
-    }
+
 }

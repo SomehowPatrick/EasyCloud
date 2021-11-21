@@ -12,17 +12,17 @@ public class Template {
     private TemplateType templateType;
     private int percentToStartNewServer;
 
-    public Template(String name) {
+    public Template(String name, int minMemory, int maxMemory, String icon, String displayName, int maxSlots, int minServerOnline, int maxServerOnline, TemplateType templateType, int percentToStartNewServer) {
         this.name = name;
-        this.minMemory = 0;
-        this.maxMemory = 0;
-        this.icon = "";
-        this.displayName = "";
-        this.maxSlots = 0;
-        this.minServerOnline = 0;
-        this.maxServerOnline = 0;
-        this.templateType = null;
-        this.percentToStartNewServer = 0;
+        this.minMemory = minMemory;
+        this.maxMemory = maxMemory;
+        this.icon = icon;
+        this.displayName = displayName;
+        this.maxSlots = maxSlots;
+        this.minServerOnline = minServerOnline;
+        this.maxServerOnline = maxServerOnline;
+        this.templateType = templateType;
+        this.percentToStartNewServer = percentToStartNewServer;
     }
 
     public String getName() {
@@ -103,22 +103,6 @@ public class Template {
 
     public void setPercentToStartNewServer(int percentToStartNewServer) {
         this.percentToStartNewServer = percentToStartNewServer;
-    }
-
-    @Override
-    public String toString() {
-        return "Template{" +
-                "name='" + name + '\'' +
-                ", minMemory=" + minMemory +
-                ", maxMemory=" + maxMemory +
-                ", icon='" + icon + '\'' +
-                ", displayName='" + displayName + '\'' +
-                ", maxSlots=" + maxSlots +
-                ", minServerOnline=" + minServerOnline +
-                ", maxServerOnline=" + maxServerOnline +
-                ", templateType=" + templateType +
-                ", percentToStartNewServer=" + percentToStartNewServer +
-                '}';
     }
 }
 
