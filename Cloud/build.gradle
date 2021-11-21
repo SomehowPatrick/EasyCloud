@@ -25,10 +25,19 @@ test {
 }
 
 // tasks
-jar {
+// TODO: Replace with shadowJar
+task bigJar(type: Jar) {
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    } {
+        duplicatesStrategy DuplicatesStrategy.WARN
+    }
     manifest {
         attributes 'Main-Class': 'de.dasirgendwas.easycloud.Main'
     }
+    with jar
 }
 
 tasks.withType(JavaCompile) {

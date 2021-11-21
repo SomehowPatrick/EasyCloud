@@ -1,11 +1,13 @@
 package de.dasirgendwas.easycloud;
 
 import de.dasirgendwas.easycloud.command.CommandHandler;
+import de.dasirgendwas.easycloud.command.commands.HelpCommand;
 import de.dasirgendwas.easycloud.command.commands.InfoCommand;
 import de.dasirgendwas.easycloud.command.commands.StopCommand;
+import de.dasirgendwas.easycloud.common.database.JedisDatabase;
+import de.dasirgendwas.easycloud.common.database.JedisDatabaseHandler;
 import de.dasirgendwas.easycloud.common.logger.Logger;
 import de.dasirgendwas.easycloud.common.template.TemplateLoader;
-import de.dasirgendwas.easycloud.common.template.TemplateManager;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -17,7 +19,8 @@ public class EasyCloud {
     private final Logger logger;
 
     private CommandHandler commandHandler;
-    private TemplateManager templateManager;
+    private TemplateLoader templateLoader;
+    private JedisDatabaseHandler jedisDatabaseHandler;
 
     public EasyCloud(String[] launchArgs) {
         this.launchArgs = launchArgs;
@@ -30,8 +33,12 @@ public class EasyCloud {
         this.commandHandler = new CommandHandler(this);
         this.commandHandler.addCommand(new StopCommand("stop", "Stops the cloud", this));
         this.commandHandler.addCommand(new InfoCommand("info", "Shows information about the cloud", this));
+        this.commandHandler.addCommand(new HelpCommand("help", "Shows help about the server", this));
 
-        this.templateManager = loadTemplateManager();
+        this.templateLoader = loadTemplateLoader();
+        addShutdownHook();
+
+        this.jedisDatabaseHandler = loadJedisDatabase("localhost", 6379);
 
         this.logger.info("Cloud started successfully!");
 
@@ -42,16 +49,29 @@ public class EasyCloud {
         }
     }
 
-    public TemplateManager loadTemplateManager() throws IOException {
-        var templateLoader = new TemplateLoader();
-        return templateLoader.getTemplateManager();
+    private TemplateLoader loadTemplateLoader() throws IOException {
+        return new TemplateLoader();
     }
 
-    public void shutdownCloud() {
+    public void shutdownCloud() throws IOException {
         this.logger.info("Stopping the cloud...");
 
         this.logger.info("Cloud stopped!");
         System.exit(0);
+    }
+
+    private void addShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                this.templateLoader.saveTemplateData();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
+    }
+
+    private JedisDatabaseHandler loadJedisDatabase(String host, int port) {
+        return new JedisDatabaseHandler(new JedisDatabase(host, port));
     }
 
     public String[] getLaunchArgs() {
@@ -60,5 +80,14 @@ public class EasyCloud {
 
     public Logger getLogger() {
         return this.logger;
+    }
+
+
+    public CommandHandler getCommandHandler() {
+        return commandHandler;
+    }
+
+    public TemplateLoader getTemplateLoader() {
+        return templateLoader;
     }
 }

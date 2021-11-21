@@ -1,34 +1,48 @@
 package de.dasirgendwas.easycloud.common.template;
 
 import com.google.gson.Gson;
-import de.dasirgendwas.easycloud.common.utils.JsonUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class TemplateLoader {
-    public static final String TEMPLATE_CONFIG_FILE = "templates.json";
+    public static final String CONFIG_DIRECTORY = "./config/";
+    public static final String TEMPLATE_CONFIG_FILE = CONFIG_DIRECTORY + "templates.json";
 
-    private final TemplateManager templateManager;
+    private final TemplateHolder templateHolder;
 
     public TemplateLoader() throws IOException {
         var templateConfig = new File(TemplateLoader.TEMPLATE_CONFIG_FILE);
+        var configDir = new File(TemplateLoader.CONFIG_DIRECTORY);
+        if (!configDir.exists()) {
+            configDir.mkdir();
+        }
         if (!templateConfig.exists()) {
            templateConfig.createNewFile();
         }
         var text = new FileInputStream(templateConfig).toString();
-        TemplateManager templateManager;
-        if (JsonUtils.isValidJson(text, TemplateManager.class)) {
-            templateManager = new Gson().fromJson(new FileInputStream(templateConfig).toString(), TemplateManager.class);
-        } else {
-            templateManager = new TemplateManager();
-        }
-        this.templateManager = templateManager;
+        TemplateHolder templateManager;
+        //if (JsonUtils.isValidJson(text, TemplateHolder.class)) {
+            templateManager = new Gson().fromJson(new FileReader(templateConfig), TemplateHolder.class);
+        //} else {
+        //    templateManager = new TemplateHolder();
+        //}
+        System.out.println(templateManager.getTemplateGroups().isEmpty());
+        this.templateHolder = templateManager;
     }
 
-    public TemplateManager getTemplateManager() {
-        return templateManager;
+    public void saveTemplateData() throws IOException {
+        String json = new Gson().toJson(this.templateHolder);
+        var templateConfig = new File(TemplateLoader.TEMPLATE_CONFIG_FILE);
+        if (!templateConfig.exists()) {
+            templateConfig.createNewFile();
+        }
+        var printWriter = new PrintWriter(new FileOutputStream(templateConfig));
+        printWriter.write(json);
+        printWriter.close();
+    }
+
+    public TemplateHolder getTemplateHolder() {
+        return templateHolder;
     }
 
 }
