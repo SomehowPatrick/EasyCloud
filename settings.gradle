@@ -1,0 +1,5 @@
+rootProject.name = 'EazyCloud'
+include 'Cloud'
+include 'Common'
+include 'common'
+
